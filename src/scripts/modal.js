@@ -1,31 +1,29 @@
-export const openModal = (evt, popup) => {
-        evt.preventDefault()
-        popup.classList.add('popup_is-opened')
-    }
-
-export const popapElement = (triggerSelector, popupSelector) => {
-    const trigger = document.querySelector(triggerSelector)
-    const popup = document.querySelector(popupSelector)
-    trigger.addEventListener('click', (evt) => openModal(evt, popup))
+export function openPopup(popup) {
+    popup.classList.add('popup_is-opened')
+    document.addEventListener('keydown', (evt) => closePopupKeydown(evt,popup));
+    popup.addEventListener('click', (evt) => closePopupClick(evt,popup));
 }
 
-export const closeModal = () => {
-    const popups = document.querySelectorAll('.popup')
-    popups.forEach(element => {
-        document.addEventListener('keydown', function (evt) {
-            if (evt.key === 'Escape') {
-                element.classList.toggle('popup_is-opened');
-            }
-        });
-        element.addEventListener('click', function (evt) {
-            if ((evt.target.closest('.popup__close')) || (!evt.target.closest('.popup__content'))) {
-                element.classList.toggle('popup_is-opened');
-            }
-        });
+export function closePopup(popup) {
+    popup.classList.remove('popup_is-opened');
+    document.removeEventListener('keydown',(evt) => closePopupKeydown(evt,popup));
+    popup.removeEventListener('click', (evt) => closePopupClick(evt,popup));
+}
 
-    });
-};
+function closePopupClick(evt, popup) {
+    if ((evt.target.closest('.popup__close')) || (!evt.target.closest('.popup__content'))) {
+        closePopup(popup);
+    }
+}
 
-closeModal()
+function closePopupKeydown(evt, popup) {
+    if (evt.key === 'Escape') {
+        closePopup(popup);
+    }
+}
 
-
+export const popapElement = (triggerSelector, popupSelector) => {
+    const trigger = document.querySelector(triggerSelector);
+    const popup = document.querySelector(popupSelector);
+    trigger.addEventListener('click', () => openPopup(popup));
+}
