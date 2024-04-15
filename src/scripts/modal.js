@@ -1,29 +1,25 @@
 export function openPopup(popup) {
     popup.classList.add('popup_is-opened')
-    document.addEventListener('keydown', (evt) => closePopupKeydown(evt,popup));
-    popup.addEventListener('click', (evt) => closePopupClick(evt,popup));
+    document.addEventListener('keydown', closePopupKeydown);
+    popup.addEventListener('click', closePopupClick);
 }
 
 export function closePopup(popup) {
     popup.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown',(evt) => closePopupKeydown(evt,popup));
-    popup.removeEventListener('click', (evt) => closePopupClick(evt,popup));
+    document.removeEventListener('keydown', closePopupKeydown);
+    popup.removeEventListener('click', closePopupClick);
 }
 
-function closePopupClick(evt, popup) {
+function closePopupClick(evt) {
+    const popup = document.querySelector('.popup_is-opened')
     if ((evt.target.closest('.popup__close')) || (!evt.target.closest('.popup__content'))) {
         closePopup(popup);
     }
 }
 
-function closePopupKeydown(evt, popup) {
+function closePopupKeydown(evt) {
+    const popup = document.querySelector('.popup_is-opened')
     if (evt.key === 'Escape') {
         closePopup(popup);
     }
-}
-
-export const popapElement = (triggerSelector, popupSelector) => {
-    const trigger = document.querySelector(triggerSelector);
-    const popup = document.querySelector(popupSelector);
-    trigger.addEventListener('click', () => openPopup(popup));
 }
