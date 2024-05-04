@@ -2,6 +2,7 @@ import './pages/index.css'
 import {createCard, deleteCard, likeCard} from "./scripts/card";
 import {initialCards} from "./scripts/cards";
 import {closePopup, openPopup} from "./scripts/modal";
+import {clearValidation, enableValidation} from "./scripts/validation";
 
 const cardsList = document.querySelector('.places__list');
 const formEditProfile = document.querySelector('.popup_type_edit');
@@ -19,6 +20,7 @@ const profileEditButton = document.querySelector('.profile__edit-button');
 const profileAddButton = document.querySelector('.profile__add-button');
 const formNewPlace = document.forms['new-place']
 
+
 function submitEditProfileForm(evt) {
     evt.preventDefault();
     name.textContent = nameInput.value;
@@ -26,15 +28,13 @@ function submitEditProfileForm(evt) {
     closePopup(formEditProfile);
 }
 
-formEditProfile.addEventListener('submit', submitEditProfileForm);
-
-formCard.addEventListener('submit', function (evt) {
+function submitNewPlaceForm(evt) {
     evt.preventDefault();
     const item = {name: titleInput.value, link: imageInput.value};
     const card =  createCard(item,{deleteCard, likeCard, handleImageClick});
     cardsList.prepend(card);
     closePopup(formCard);
-});
+}
 
 function handleImageClick(evt){
     popapImg.src = evt.target.src;
@@ -49,13 +49,17 @@ initialCards.forEach(function (initialCard) {
 });
 
 profileEditButton.addEventListener('click', function () {
-    openPopup(formEditProfile);
     nameInput.value = name.textContent;
     jobInput.value = job.textContent;
+    clearValidation(formEditProfile)
+    openPopup(formEditProfile);
 })
 
 profileAddButton.addEventListener('click', function () {
-    formNewPlace.reset()
+    formNewPlace.reset();
+    clearValidation(formCard);
     openPopup(formCard);
 })
 
+enableValidation(submitEditProfileForm, formEditProfile);
+enableValidation(submitNewPlaceForm, formCard);
