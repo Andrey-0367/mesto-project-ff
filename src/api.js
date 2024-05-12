@@ -10,6 +10,7 @@ const handleRequest = res => {
   if (res.ok) {
     return res.json()
   }
+  return Promise.reject(`Ошибка: ${res.status}`);
 }
 
 export const user = fetch(`${config.baseUrl}/users/me`, {
