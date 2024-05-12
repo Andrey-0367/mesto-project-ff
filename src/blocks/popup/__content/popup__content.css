@@ -7,6 +7,7 @@
   position: relative;
   box-sizing: border-box;
   padding: 34px 36px;
+  bottom: 94px;
 }
 
 @media screen and (max-width: 568px) {
@@ -16,4 +17,8 @@
     margin-top: 40px;
     padding: 30px 20px;
   }
+}
+
+.popup__content_content_min {
+  min-height: 190px;
 }

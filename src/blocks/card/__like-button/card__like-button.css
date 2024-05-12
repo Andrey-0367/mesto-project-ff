@@ -13,8 +13,26 @@
   -ms-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
+  position: relative;
+  bottom: 4px;
 }
 
 .card__like-button:hover {
   opacity: 0.6;
+}
+
+.card__like-button-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.card__like-button-sum {
+  align-self: center;
+  color: #000;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  height: 13px;
+  line-height: 16px;
+  text-align: center;
 }
