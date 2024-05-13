@@ -67,9 +67,6 @@ const toggleButtonState = (config, inputList, buttonElement) => {
 const enableValidation = config => {
   const formList = document.querySelectorAll(config.formSelector);
   formList.forEach((formElement) => {
-    formElement.addEventListener("submit", (evt) => {
-      evt.preventDefault();
-    });
     setEventListeners(config, formElement);
   });
 }
