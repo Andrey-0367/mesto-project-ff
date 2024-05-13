@@ -123,32 +123,6 @@ function submitEditProfileForm (evt) {
     })
 }
 
-function submitNewPlaceForm (evt) {
-  evt.preventDefault()
-  popupButtonNewPlace.textContent = 'Сохранение...'
-  const item = {
-    name: titleInput.value,
-    link: imageInput.value
-  }
-    postNewCard(item)
-    .then(data => {
-      return data
-    })
-    .then(function (todo) {
-      const card = createCard(todo, data, {
-        deleteCard,
-        likeCard,
-        handleImageClick
-      })
-      cardsList.prepend(card)
-    })
-    .catch(err => console.error(err))
-    .finally(function () {
-        popupButtonNewPlace.textContent = 'Сохранить'
-        closePopup(formCard)
-    })
-}
-
 function handleImageClick (evt) {
   popapImg.src = evt.target.src
   popapImg.alt = evt.target.alt
@@ -175,6 +149,33 @@ getInitialData()
     job.textContent = data.about
     profAvatar.style.backgroundImage = `url(${data.avatar})`
 
+      function submitNewPlaceForm (evt) {
+          evt.preventDefault()
+          popupButtonNewPlace.textContent = 'Сохранение...'
+          const item = {
+              name: titleInput.value,
+              link: imageInput.value
+          }
+          postNewCard(item)
+              .then(data => {
+                  return data
+              })
+              .then(function (todo) {
+                  const card = createCard(todo, data, {
+                      deleteCard,
+                      likeCard,
+                      handleImageClick
+                  })
+                  cardsList.prepend(card)
+              })
+              .catch(err => console.error(err))
+              .finally(function () {
+                  popupButtonNewPlace.textContent = 'Сохранить'
+                  closePopup(formCard)
+              })
+      }
+    enableFormSumbit(submitNewPlaceForm, formCard)
+
     cards.forEach(function (initialCard) {
       const element = createCard(initialCard, data, {
         deleteCard,
@@ -191,5 +192,4 @@ const enableFormSumbit = (submitEvent, formElement) => {
 }
 
 enableFormSumbit(submitEditProfileForm, formEditProfile)
-enableFormSumbit(submitNewPlaceForm, formCard)
 enableFormSumbit(submitAvatarEditProfile, avatarImage)
