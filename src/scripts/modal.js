@@ -11,12 +11,11 @@ export function closePopup (popup) {
 }
 
 function closePopupClick (evt) {
-  const popup = document.querySelector('.popup_is-opened')
   if (
-    evt.target.closest('.popup__close') ||
-    !evt.target.closest('.popup__content')
+      evt.target.classList.contains('popup__close') ||
+      evt.target.classList.contains('popup')
   ) {
-    closePopup(popup)
+    closePopup(evt.currentTarget)
   }
 }
 

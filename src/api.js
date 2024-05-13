@@ -13,28 +13,27 @@ const handleRequest = res => {
   return Promise.reject(`Ошибка: ${res.status}`);
 }
 
-export const user = fetch(`${config.baseUrl}/users/me`, {
+export const getUser = fetch(`${config.baseUrl}/users/me`, {
   headers: config.headers
 }).then(handleRequest)
 
-export const cards = fetch(`${config.baseUrl}/cards`, {
+export const getCards = fetch(`${config.baseUrl}/cards`, {
   headers: config.headers
 }).then(handleRequest)
 
-export function createNewCard (NewCard) {
+export function postNewCard (newCard) {
   return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     headers: config.headers,
     body: JSON.stringify({
-      name: NewCard.name,
-      link: NewCard.link,
-      _id: NewCard._id
+      name: newCard.name,
+      link: newCard.link
     })
   }).then(handleRequest)
 }
 
-export function initialCards () {
-  return Promise.all([user, cards])
+export function getInitialData () {
+  return Promise.all([getUser, getCards])
 }
 
 export function patchProfile (newProfile) {
@@ -59,22 +58,21 @@ export function patchAvatarProfile (newProfile) {
 }
 
 export function deleteCardItem (id) {
-  fetch(`${config.baseUrl}/cards/${id}`, {
+  return fetch(`${config.baseUrl}/cards/${id}`, {
     method: 'DELETE',
     headers: config.headers
   })
     .then(handleRequest)
-    .catch(err => console.error(err))
 }
 
-export function likeCardNew (id) {
+export function putlikeCard (id) {
   return fetch(`${config.baseUrl}/cards/likes/${id}`, {
     method: 'PUT',
     headers: config.headers
   }).then(handleRequest)
 }
 
-export function likeCardDelete (id) {
+export function dtletelikeCard (id) {
   return fetch(`${config.baseUrl}/cards/likes/${id}`, {
     method: 'DELETE',
     headers: config.headers

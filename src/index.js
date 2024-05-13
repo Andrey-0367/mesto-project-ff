@@ -1,17 +1,15 @@
 import './pages/index.css'
-import './api.js'
 import { createCard } from './scripts/card'
-
 import { closePopup, openPopup } from './scripts/modal'
-import { clearValidation, enableValidation } from './scripts/validation'
+import {clearValidation, validationConfig} from './scripts/validation'
 import {
-  createNewCard,
-  deleteCardItem,
-  initialCards,
-  likeCardDelete,
-  likeCardNew,
-  patchAvatarProfile,
-  patchProfile
+    postNewCard,
+    deleteCardItem,
+    patchAvatarProfile,
+    patchProfile,
+    putlikeCard,
+    dtletelikeCard,
+    getInitialData,
 } from './api'
 
 const popapImg = document.querySelector('.popup__image')
@@ -43,9 +41,24 @@ const popupCardDelete = document.querySelector('.popup_card_delete')
 const cardDeleteButtonPopap = document.querySelector(
   '.popup__button-card-delete'
 )
-
 const state = {
   itemToDelete: null
+}
+
+
+const likeCard = (item, data, likeAmount) => evt => {
+  evt.preventDefault()
+  const noLikesNumber = item.likes.some(num => {
+      return num._id === data._id
+  })
+  const likeMethod = !noLikesNumber ? putlikeCard : dtletelikeCard;
+  return likeMethod(item._id)
+      .then(data => {
+          evt.target.classList.toggle('card__like-button_is-active')
+          likeAmount.textContent = data.likes.length
+          item.likes = data.likes
+      })
+      .catch(err => console.log(err));
 }
 
 const deleteCard = item => evt => {
@@ -61,7 +74,11 @@ cardDeleteButtonPopap.addEventListener('click', function (evt) {
   }
 
   deleteCardItem(state.itemToDelete._id)
-  const cardElement = document.querySelector('#id' + state.itemToDelete._id)
+      .then(data => {
+      return data
+      })
+      .catch(err => console.error(err))
+  const cardElement = document.querySelector('#id' + state.itemToDelete._id);
   cardElement.remove()
   state.itemToDelete = null
   closePopup(popupCardDelete)
@@ -73,15 +90,17 @@ function submitAvatarEditProfile (evt) {
   patchAvatarProfile({ avatar: avatarImput.value })
     .then(data => {
       profAvatar.style.backgroundImage = `url(${data.avatar})`
-      popupButtonAvatar.textContent = 'Сохранить'
-      closePopup(avatarImage)
     })
     .catch(err => console.error(err))
+    .finally(function () {
+        popupButtonAvatar.textContent = 'Сохранить'
+        closePopup(avatarImage)
+    })
 }
 
 avatarProfileButton.addEventListener('click', function (evt) {
   formAvatarImage.reset()
-  clearValidation(avatarImage)
+  clearValidation(avatarImage, validationConfig)
   openPopup(avatarImage)
 })
 
@@ -96,38 +115,41 @@ function submitEditProfileForm (evt) {
     .then(data => {
       name.textContent = data.name
       job.textContent = data.about
-      popupButtonEditProfile.textContent = 'Сохранить'
-      closePopup(formEditProfile)
     })
     .catch(err => console.error(err))
+    .finally(function () {
+        popupButtonEditProfile.textContent = 'Сохранить'
+        closePopup(formEditProfile)
+    })
 }
 
-export function submitNewPlaceForm (evt) {
+function submitNewPlaceForm (evt) {
   evt.preventDefault()
   popupButtonNewPlace.textContent = 'Сохранение...'
   const item = {
     name: titleInput.value,
     link: imageInput.value
   }
-  createNewCard(item)
+    postNewCard(item)
     .then(data => {
       return data
     })
     .then(function (todo) {
-      const card = createCard(todo, {
+      const card = createCard(todo, data, {
         deleteCard,
-        likeCardNew,
-        likeCardDelete,
+        likeCard,
         handleImageClick
       })
       cardsList.prepend(card)
-      popupButtonNewPlace.textContent = 'Сохранить'
-      closePopup(formCard)
     })
     .catch(err => console.error(err))
+    .finally(function () {
+        popupButtonNewPlace.textContent = 'Сохранить'
+        closePopup(formCard)
+    })
 }
 
-export function handleImageClick (evt) {
+function handleImageClick (evt) {
   popapImg.src = evt.target.src
   popapImg.alt = evt.target.alt
   caption.textContent = evt.target.alt
@@ -137,48 +159,37 @@ export function handleImageClick (evt) {
 profileEditButton.addEventListener('click', function () {
   nameInput.value = name.textContent
   jobInput.value = job.textContent
-  clearValidation(formEditProfile)
+  clearValidation(formEditProfile, validationConfig)
   openPopup(formEditProfile)
 })
 
 profileAddButton.addEventListener('click', function () {
   formNewPlace.reset()
-  clearValidation(formCard)
+  clearValidation(formCard, validationConfig)
   openPopup(formCard)
 })
 
-initialCards()
+getInitialData()
   .then(([data, cards]) => {
     name.textContent = data.name
     job.textContent = data.about
     profAvatar.style.backgroundImage = `url(${data.avatar})`
 
     cards.forEach(function (initialCard) {
-      const element = createCard(initialCard, {
+      const element = createCard(initialCard, data, {
         deleteCard,
-        likeCardNew,
-        likeCardDelete,
+        likeCard,
         handleImageClick
       })
-      const deleteButton = element.querySelector('.card__delete-button')
-      if (data._id !== initialCard.owner._id) {
-        deleteButton.remove()
-      }
-      const likeEvenNumber = initialCard.likes.some(num => {
-        return num._id === data._id
-      })
-      if (likeEvenNumber === true) {
-        element
-          .querySelector('.card__like-button')
-          .classList.add('card__like-button_is-active')
-      }
-      element.querySelector('.card__like-button-sum').textContent =
-        initialCard.likes.length
       cardsList.append(element)
     })
   })
   .catch(err => console.error(err))
 
-enableValidation(submitEditProfileForm, formEditProfile)
-enableValidation(submitNewPlaceForm, formCard)
-enableValidation(submitAvatarEditProfile, avatarImage)
+const enableFormSumbit = (submitEvent, formElement) => {
+    formElement.addEventListener('submit', submitEvent)
+}
+
+enableFormSumbit(submitEditProfileForm, formEditProfile)
+enableFormSumbit(submitNewPlaceForm, formCard)
+enableFormSumbit(submitAvatarEditProfile, avatarImage)
