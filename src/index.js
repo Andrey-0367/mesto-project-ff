@@ -73,14 +73,14 @@ cardDeleteButtonPopap.addEventListener('click', function (evt) {
     return
   }
 
-  deleteCardItem(state.itemToDelete._id)
+    deleteCardItem(state.itemToDelete._id)
       .then(data => {
+          cardElement.remove()
       return data
       })
       .catch(err => console.error(err))
-  const cardElement = document.querySelector('#id' + state.itemToDelete._id);
-  cardElement.remove()
-  state.itemToDelete = null
+    const cardElement = document.querySelector('#id' + state.itemToDelete._id)
+    state.itemToDelete = null
   closePopup(popupCardDelete)
 })
 
